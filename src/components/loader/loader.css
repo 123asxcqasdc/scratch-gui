@@ -1,0 +1,106 @@
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+@import "../../css/default-colors.css";
+
+/* UliBlock loader: dark, minimal, snail instead of the stock block stack.
+   The progress contract (ASSET_PROGRESS / PROJECT_LOADED in loader.jsx)
+   is unchanged. */
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: $z-index-loader;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #111;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: center;
+    color: #eee;
+}
+
+.fullscreen {
+    position: fixed;
+    z-index: $z-index-stage-wrapper-overlay;
+}
+
+.snail-animation {
+    position: relative;
+    width: 160px;
+    height: 90px;
+    margin: 40px auto 0;
+    overflow: hidden;
+}
+
+.snail {
+    position: absolute;
+    bottom: 18px;
+    left: 0;
+    font-size: 52px;
+    line-height: 1;
+    animation: snail-crawl 3s ease-in-out infinite;
+}
+
+.trail {
+    position: absolute;
+    bottom: 14px;
+    left: 8px;
+    width: 130px;
+    height: 3px;
+    border-radius: 3px;
+    background: #333;
+    overflow: hidden;
+}
+
+.trail::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #888;
+    transform-origin: left;
+    animation: snail-trail 3s ease-in-out infinite;
+}
+
+@keyframes snail-crawl {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(78px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes snail-trail {
+    0% { transform: scaleX(0.08); }
+    50% { transform: scaleX(0.62); }
+    100% { transform: scaleX(0.08); }
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.75rem 0;
+}
+
+.message {
+    height: 20px;
+    margin: 5px 0;
+    color: #aaa;
+}
+
+.bar-outer {
+    width: 250px;
+    height: 8px;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+.bar-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #ddd;
+}
