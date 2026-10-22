@@ -15,8 +15,12 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 22
-        cache: npm
-    - run: npm ci
+        node-version: 24
+    - name: Use HTTPS for GitHub git dependencies
+      run: |
+        git config --global --add url."https://github.com/".insteadOf "git@github.com:"
+        git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
+        git config --global --add url."https://github.com/".insteadOf "git+ssh://git@github.com/"
+    - run: npm install --no-audit --no-fund
     - run: npm run build
     - run: npm run test:unit
