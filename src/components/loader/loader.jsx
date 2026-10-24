@@ -117,15 +117,15 @@ class LoaderComponent extends React.Component {
 
         this.ignoreProgress = true;
         this.finished = true;
-        this.barInnerEl.style.width = '100%';
+        if (this.barInnerEl) {
+            this.barInnerEl.style.width = '100%';
+        }
         if (this.snailEl && this.trackEl) {
             this.snailEl.classList.remove(styles.snailFalling);
             this.snailEl.classList.remove(styles.snailCrawling);
             this.updateSnailPosition(1);
-            const trackWidth = this.trackEl.clientWidth || 420;
-            this.snailEl.style.setProperty('--snail-x', `${trackWidth * 0.9}px`);
             void this.snailEl.offsetWidth;
-            this.snailEl.classList.add(styles.snailExiting);
+            this.snailEl.classList.add(styles.snailDropping);
         }
         this.props.vm.runtime.resetProgress();
     }
