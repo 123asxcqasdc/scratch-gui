@@ -85,9 +85,10 @@ class LoaderComponent extends React.Component {
         if (!this._attachedVM && typeof window !== 'undefined') {
             if (window.vm) this._attachVM(window.vm);
             else if (window.Scratch && window.Scratch.vm) this._attachVM(window.Scratch.vm);
+            else if (window.scaffolding && window.scaffolding.vm) this._attachVM(window.scaffolding.vm);
         }
         this._vmCheckInterval = setInterval(() => {
-            if (this._attachedVM) {
+            if (this._attachedVM && this._attachedVM.runtime) {
                 clearInterval(this._vmCheckInterval);
                 this._vmCheckInterval = null;
                 return;
@@ -95,19 +96,40 @@ class LoaderComponent extends React.Component {
             if (typeof window !== 'undefined') {
                 if (window.vm) this._attachVM(window.vm);
                 else if (window.Scratch && window.Scratch.vm) this._attachVM(window.Scratch.vm);
+                else if (window.scaffolding && window.scaffolding.vm) this._attachVM(window.scaffolding.vm);
             }
-        }, 100);
+            if (!this._attachedVM && this.props.vm) {
+                this._attachVM(this.props.vm);
+            }
+        }, 50);
         setTimeout(() => {
             if (this._vmCheckInterval) {
                 clearInterval(this._vmCheckInterval);
                 this._vmCheckInterval = null;
             }
-        }, 10000);
+        }, 15000);
+
+        this._progressPoll = setInterval(() => {
+            if (this.ignoreProgress || this.finished) return;
+            const vm = this._attachedVM || this.props.vm;
+            if (!vm || !vm.runtime) return;
+            try {
+                const finished = vm.runtime.finishedAssetRequests || 0;
+                const total = vm.runtime.totalAssetRequests || 0;
+                if (typeof finished === 'number' && typeof total === 'number') {
+                    this.handleAssetProgress(finished, total);
+                }
+            } catch (e) {}
+        }, 50);
     }
     componentWillUnmount () {
         if (this._vmCheckInterval) {
             clearInterval(this._vmCheckInterval);
             this._vmCheckInterval = null;
+        }
+        if (this._progressPoll) {
+            clearInterval(this._progressPoll);
+            this._progressPoll = null;
         }
         if (this._attachedVM) {
             try { this._attachedVM.off('ASSET_PROGRESS', this.handleAssetProgress); } catch (e) {}
