@@ -11,6 +11,7 @@ import extensionLibraryContent, {
     galleryMore
 } from '../lib/libraries/extensions/index.jsx';
 import extensionTags from '../lib/libraries/tw-extension-tags';
+import {getSavedExtensions} from '../lib/tw-saved-extensions';
 
 import LibraryComponent from '../components/library/library.jsx';
 import extensionIcon from '../components/action-menu/icon--sprite.svg';
@@ -54,42 +55,52 @@ const pickBestVariant = variants => (
 );
 
 const fetchLibrary = async () => {
-    const res = await fetch(ULIBLOCK_GALLERY_URL);
-    if (!res.ok) {
-        throw new Error(`HTTP status ${res.status}`);
+    try {
+        const res = await fetch(ULIBLOCK_GALLERY_URL);
+        if (!res.ok) {
+            throw new Error(`HTTP status ${res.status}`);
+        }
+        const data = await res.json();
+        return (data.extensions || [])
+            .map(extension => {
+                const variants = (extension.variants || []).filter(v => v && v.url);
+                if (!variants.length) {
+                    return null;
+                }
+                const best = pickBestVariant(variants);
+                const knownVariant = variants.find(v => v.ext_id);
+                const category = extension.category || 'other';
+                const tags = ['tw'];
+                if (category === 'network' || best.tags?.includes('network')) tags.push('network');
+                if (category === 'skinning' || category === 'skins' || category === 'costumes') tags.push('skins');
+                if (category === 'hardware') tags.push('hardware');
+                if (category === 'utility' || category === 'utilities') tags.push('utilities');
+                return {
+                    name: extension.name,
+                    nameTranslations: {},
+                    description: extension.description || best.description || '',
+                    descriptionTranslations: {},
+                    // May be unknown for a few catalogue entries; handleItemSelect
+                    // resolves the real id from the VM after loading in that case.
+                    extensionId: best.ext_id || (knownVariant && knownVariant.ext_id) || null,
+                    extensionURL: best.url,
+                    iconURL: best.image || extension.image || null,
+                    tags: tags,
+                    credits: [
+                        best.source_label || best.source,
+                        extension.author,
+                        best.author
+                    ].filter((credit, index, all) => credit && all.indexOf(credit) === index),
+                    docsURI: best.documentation || null,
+                    samples: null,
+                    incompatibleWithScratch: best.source !== 'official',
+                    featured: true
+                };
+            })
+            .filter(Boolean);
+    } catch (e) {
+        throw e;
     }
-    const data = await res.json();
-    return (data.extensions || [])
-        .map(extension => {
-            const variants = (extension.variants || []).filter(v => v && v.url);
-            if (!variants.length) {
-                return null;
-            }
-            const best = pickBestVariant(variants);
-            const knownVariant = variants.find(v => v.ext_id);
-            return {
-                name: extension.name,
-                nameTranslations: {},
-                description: extension.description || best.description || '',
-                descriptionTranslations: {},
-                // May be unknown for a few catalogue entries; handleItemSelect
-                // resolves the real id from the VM after loading in that case.
-                extensionId: best.ext_id || (knownVariant && knownVariant.ext_id) || null,
-                extensionURL: best.url,
-                iconURL: best.image || extension.image || null,
-                tags: ['tw'],
-                credits: [
-                    best.source_label || best.source,
-                    extension.author,
-                    best.author
-                ].filter((credit, index, all) => credit && all.indexOf(credit) === index),
-                docsURI: best.documentation || null,
-                samples: null,
-                incompatibleWithScratch: best.source !== 'official',
-                featured: true
-            };
-        })
-        .filter(Boolean);
 };
 
 class ExtensionLibrary extends React.PureComponent {
@@ -181,24 +192,40 @@ class ExtensionLibrary extends React.PureComponent {
         }
     }
     render () {
-        let library = null;
-        if (this.state.gallery || this.state.galleryError || this.state.galleryTimedOut) {
-            library = extensionLibraryContent.map(toLibraryItem);
+        const library = [];
+        library.push(...extensionLibraryContent.map(toLibraryItem));
+        library.push('---');
+        
+        // Saved extensions tab
+        const saved = getSavedExtensions();
+        if (saved.length > 0) {
+            const savedItems = saved.map(item => ({
+                name: item.name || item.url,
+                extensionId: item.url,
+                extensionURL: item.url,
+                iconURL: extensionIcon,
+                description: item.url,
+                tags: item.tags || ['saved'],
+                featured: true
+            }));
+            library.push(...savedItems.map(toLibraryItem));
             library.push('---');
-            if (this.state.gallery) {
-                library.push(toLibraryItem(galleryMore));
-                const locale = this.props.intl.locale;
-                library.push(
-                    ...this.state.gallery
-                        .filter(i => i.extensionId !== 'faceSensing')
-                        .map(i => translateGalleryItem(i, locale))
-                        .map(toLibraryItem)
-                );
-            } else if (this.state.galleryError) {
-                library.push(toLibraryItem(galleryError));
-            } else {
-                library.push(toLibraryItem(galleryLoading));
-            }
+        }
+        
+        if (this.state.gallery) {
+            library.push(toLibraryItem(galleryMore));
+            const locale = this.props.intl.locale;
+            library.push(
+                ...this.state.gallery
+                    .filter(i => i.extensionId !== 'faceSensing')
+                    .map(i => translateGalleryItem(i, locale))
+                    .map(toLibraryItem)
+            );
+        } else if (this.state.galleryError) {
+            // Offline - still show saved extensions, but don't fail completely
+            library.push(toLibraryItem(galleryError));
+        } else {
+            library.push(toLibraryItem(galleryLoading));
         }
 
         return (

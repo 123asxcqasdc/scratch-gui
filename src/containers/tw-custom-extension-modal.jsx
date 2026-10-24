@@ -7,6 +7,7 @@ import CustomExtensionModalComponent from '../components/tw-custom-extension-mod
 import {closeCustomExtensionModal} from '../reducers/modals';
 import {manuallyTrustExtension, isTrustedExtension} from './tw-security-manager.jsx';
 import {getPersistedUnsandboxed, setPersistedUnsandboxed} from '../lib/tw-persisted-unsandboxed.js';
+import {saveExtension} from '../lib/tw-saved-extensions';
 
 /**
  * @param {Blob} blob Blob
@@ -136,6 +137,28 @@ class CustomExtensionModal extends React.Component {
 
             for (const url of urls) {
                 await this.props.vm.extensionManager.loadExtensionURL(url);
+                if (this.state.type === 'url') {
+                    saveExtension({
+                        name: this.state.url,
+                        url: this.state.url,
+                        type: 'url',
+                        tags: ['saved']
+                    });
+                } else if (this.state.type === 'file') {
+                    saveExtension({
+                        name: this.state.files && this.state.files[0] ? this.state.files[0].name : 'Custom extension',
+                        url: url,
+                        type: 'file',
+                        tags: ['saved']
+                    });
+                } else if (this.state.type === 'text') {
+                    saveExtension({
+                        name: 'Custom extension (text)',
+                        url: url,
+                        type: 'text',
+                        tags: ['saved']
+                    });
+                }
             }
         } catch (err) {
             log.error(err);
