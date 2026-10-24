@@ -42,9 +42,6 @@ const messages = defineMessages({
     }
 });
 
-// Because progress events are fired so often during the very performance-critical loading
-// process and React updates are very slow, we bypass React for updating the progress bar.
-
 class LoaderComponent extends React.Component {
     constructor (props) {
         super(props);
@@ -52,11 +49,16 @@ class LoaderComponent extends React.Component {
             'handleAssetProgress',
             'handleProjectLoaded',
             'barInnerRef',
-            'messageRef'
+            'messageRef',
+            'snailRef',
+            'trackRef'
         ]);
         this.barInnerEl = null;
         this.messageEl = null;
+        this.snailEl = null;
+        this.trackEl = null;
         this.ignoreProgress = false;
+        this.finished = false;
     }
     componentDidMount () {
         this.handleAssetProgress(
@@ -70,17 +72,37 @@ class LoaderComponent extends React.Component {
         this.props.vm.off('ASSET_PROGRESS', this.handleAssetProgress);
         this.props.vm.runtime.off('PROJECT_LOADED', this.handleProjectLoaded);
     }
+    updateSnailPosition (progress) {
+        if (!this.snailEl || !this.trackEl) {
+            return;
+        }
+        const clamped = Math.max(0, Math.min(1, progress));
+        const trackWidth = this.trackEl.clientWidth || 250;
+        const snailSize = 52;
+        const offset = clamped * (trackWidth - snailSize * 0.6);
+        this.snailEl.style.left = `${offset}px`;
+    }
     handleAssetProgress (finished, total) {
         if (this.ignoreProgress || !this.barInnerEl || !this.messageEl) {
             return;
         }
 
         if (total === 0) {
-            // Started loading a new project.
             this.barInnerEl.style.width = '0';
             this.messageEl.textContent = this.props.intl.formatMessage(messages.projectData);
+            this.updateSnailPosition(0);
+            if (this.snailEl) {
+                this.snailEl.classList.remove(styles.snailExiting);
+                this.snailEl.classList.add(styles.snailFalling);
+            }
         } else {
-            this.barInnerEl.style.width = `${finished / total * 100}%`;
+            const progress = finished / total;
+            this.barInnerEl.style.width = `${progress * 100}%`;
+            this.updateSnailPosition(progress);
+            if (this.snailEl) {
+                this.snailEl.classList.remove(styles.snailFalling);
+                this.snailEl.classList.add(styles.snailCrawling);
+            }
             const message = this.props.isRemote ? messages.downloadingAssets : messages.loadingAssets;
             this.messageEl.textContent = this.props.intl.formatMessage(message, {
                 complete: finished,
@@ -94,6 +116,17 @@ class LoaderComponent extends React.Component {
         }
 
         this.ignoreProgress = true;
+        this.finished = true;
+        this.barInnerEl.style.width = '100%';
+        if (this.snailEl && this.trackEl) {
+            this.snailEl.classList.remove(styles.snailFalling);
+            this.snailEl.classList.remove(styles.snailCrawling);
+            this.updateSnailPosition(1);
+            const trackWidth = this.trackEl.clientWidth || 250;
+            this.snailEl.style.setProperty('--snail-x', `${trackWidth * 0.9}px`);
+            void this.snailEl.offsetWidth;
+            this.snailEl.classList.add(styles.snailExiting);
+        }
         this.props.vm.runtime.resetProgress();
     }
     barInnerRef (barInner) {
@@ -101,6 +134,12 @@ class LoaderComponent extends React.Component {
     }
     messageRef (message) {
         this.messageEl = message;
+    }
+    snailRef (snail) {
+        this.snailEl = snail;
+    }
+    trackRef (track) {
+        this.trackEl = track;
     }
     render () {
         return (
@@ -111,11 +150,19 @@ class LoaderComponent extends React.Component {
             >
                 <div className={styles.container}>
                     <div
-                        className={styles.snailAnimation}
+                        className={styles.snailStage}
                         aria-hidden="true"
                     >
-                        <span className={styles.snail}>{'\uD83D\uDC0C'}</span>
-                        <span className={styles.trail} />
+                        <div
+                            className={classNames(styles.snail, styles.snailFalling)}
+                            ref={this.snailRef}
+                        >
+                            {'\uD83D\uDC0C'}
+                        </div>
+                        <div
+                            className={styles.snailTrack}
+                            ref={this.trackRef}
+                        />
                     </div>
 
                     <div className={styles.title}>
