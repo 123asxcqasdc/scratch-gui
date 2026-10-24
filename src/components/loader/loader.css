@@ -53,9 +53,10 @@
     left: -60px;
     font-size: 52px;
     line-height: 1;
-    transform: translateX(0);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
-    transition: left 0.15s linear;
+    transform: translateX(0) rotate(0deg);
+    transition: left 0.18s linear;
+    will-change: left, transform;
 }
 
 .snail-falling {
@@ -63,7 +64,8 @@
 }
 
 .snail-crawling {
-    transition: left 0.2s ease-out;
+    animation: snail-wobble 0.6s ease-in-out infinite;
+    transition: left 0.22s ease-out;
 }
 
 .snail-exiting {
@@ -73,11 +75,11 @@
 
 @keyframes snail-fall-in {
     0% {
-        left: -80px;
-        bottom: 80px;
-        transform: rotate(-25deg);
+        left: -90px;
+        bottom: 90px;
+        transform: rotate(-28deg);
     }
-    70% {
+    60% {
         left: 0;
         bottom: 16px;
         transform: rotate(0deg);
@@ -89,16 +91,36 @@
     }
 }
 
+@keyframes snail-wobble {
+    0% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-2px) rotate(-2deg);
+    }
+    50% {
+        transform: translateX(0) rotate(0deg);
+    }
+    75% {
+        transform: translateX(2px) rotate(2deg);
+    }
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+}
+
 @keyframes snail-slide-out {
     0% {
         left: var(--snail-x, 0);
         bottom: 16px;
         opacity: 1;
+        transform: rotate(0deg);
     }
     100% {
-        left: calc(250px + 90px);
+        left: calc(250px + 100px);
         bottom: 16px;
         opacity: 1;
+        transform: rotate(0deg);
     }
 }
 
