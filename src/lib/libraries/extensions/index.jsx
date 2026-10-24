@@ -466,7 +466,7 @@ export const galleryMore = {
             }}
         />
     ),
-    href: 'https://123asxcqasdc.github.io/turbowarp-extensions/',
+    href: 'https://123asxcqasdc.github.io/turbowarp-extensions/?uliblock=1',
     extensionId: 'gallery',
     iconURL: galleryIcon,
     description: (
@@ -491,7 +491,7 @@ export const galleryError = {
             }}
         />
     ),
-    href: 'https://123asxcqasdc.github.io/turbowarp-extensions/',
+    href: 'https://123asxcqasdc.github.io/turbowarp-extensions/?uliblock=1',
     extensionId: 'gallery',
     iconURL: galleryIcon,
     description: (

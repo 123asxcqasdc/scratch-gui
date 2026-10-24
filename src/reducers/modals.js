@@ -23,6 +23,7 @@ const initialState = {
     [MODAL_BACKDROP_LIBRARY]: false,
     [MODAL_COSTUME_LIBRARY]: false,
     [MODAL_EXTENSION_LIBRARY]: false,
+    [MODAL_EXTENSION_BROWSER]: false,
     [MODAL_LOADING_PROJECT]: false,
     [MODAL_TELEMETRY]: false,
     [MODAL_SOUND_LIBRARY]: false,
@@ -126,6 +127,12 @@ const closeCostumeLibrary = function () {
 const closeExtensionLibrary = function () {
     return closeModal(MODAL_EXTENSION_LIBRARY);
 };
+const openExtensionBrowser = function () {
+    return openModal(MODAL_EXTENSION_BROWSER);
+};
+const closeExtensionBrowser = function () {
+    return closeModal(MODAL_EXTENSION_BROWSER);
+};
 const closeLoadingProject = function () {
     return closeModal(MODAL_LOADING_PROJECT);
 };
@@ -191,6 +198,8 @@ export {
     closeBackdropLibrary,
     closeCostumeLibrary,
     closeExtensionLibrary,
+    openExtensionBrowser,
+    closeExtensionBrowser,
     closeLoadingProject,
     closeSpriteLibrary,
     closeSoundLibrary,
