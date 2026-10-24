@@ -11,7 +11,7 @@ import extensionLibraryContent, {
     galleryMore
 } from '../lib/libraries/extensions/index.jsx';
 import extensionTags from '../lib/libraries/tw-extension-tags';
-import {getSavedExtensions} from '../lib/tw-saved-extensions';
+import {getSavedExtensions, saveExtension} from '../lib/tw-saved-extensions';
 
 import LibraryComponent from '../components/library/library.jsx';
 import extensionIcon from '../components/action-menu/icon--sprite.svg';
@@ -75,6 +75,10 @@ const fetchLibrary = async () => {
                 if (category === 'skinning' || category === 'skins' || category === 'costumes') tags.push('skins');
                 if (category === 'hardware') tags.push('hardware');
                 if (category === 'utility' || category === 'utilities') tags.push('utilities');
+                // Add source tags
+                if (best.source === 'official') tags.push('official');
+                else tags.push('community');
+                
                 return {
                     name: extension.name,
                     nameTranslations: {},
@@ -94,7 +98,10 @@ const fetchLibrary = async () => {
                     docsURI: best.documentation || null,
                     samples: null,
                     incompatibleWithScratch: best.source !== 'official',
-                    featured: true
+                    featured: true,
+                    fromGallery: true,
+                    gallery: true,
+                    source: best.source
                 };
             })
             .filter(Boolean);
@@ -165,6 +172,18 @@ class ExtensionLibrary extends React.PureComponent {
             } else {
                 this.props.vm.extensionManager.loadExtensionURL(url)
                     .then(() => {
+                        if (item.fromGallery || item.gallery) {
+                            try {
+                                saveExtension({
+                                    name: item.name,
+                                    url: url,
+                                    type: 'gallery',
+                                    tags: ['saved']
+                                });
+                            } catch (e) {
+                                // ignore
+                            }
+                        }
                         let loadedId = extensionId;
                         if (!loadedId) {
                             // Catalogue entry had no registered id: ask the VM
