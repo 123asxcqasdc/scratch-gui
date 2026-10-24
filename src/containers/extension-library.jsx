@@ -182,18 +182,17 @@ class ExtensionLibrary extends React.PureComponent {
             } else {
                 this.props.vm.extensionManager.loadExtensionURL(url)
                     .then(() => {
-                        if (item.fromGallery || item.gallery) {
-                            try {
-                                saveExtension({
-                                    name: item.name,
-                                    url: url,
-                                    type: 'gallery',
-                                    tags: ['saved']
-                                });
-                            } catch (e) {
-                                // ignore
-                            }
-                        }
+        try {
+            saveExtension({
+                name: item.name,
+                url: url,
+                type: item.fromGallery || item.gallery ? 'gallery' : 'custom',
+                tags: (item.tags || []).includes('saved') ? item.tags : [...(item.tags || []), 'saved'],
+                iconURL: item.iconURL || null
+            });
+        } catch (e) {
+            // ignore
+        }
                         let loadedId = extensionId;
                         if (!loadedId) {
                             // Catalogue entry had no registered id: ask the VM
@@ -222,27 +221,37 @@ class ExtensionLibrary extends React.PureComponent {
     }
     render () {
         const library = [];
+        // Scratch defaults
         library.push(...extensionLibraryContent.map(toLibraryItem));
         library.push('---');
         
-        // Saved extensions tab
+        // Saved extensions (all user-loaded custom/extensions)
         const saved = getSavedExtensions();
         if (saved.length > 0) {
-            const savedItems = saved.map(item => ({
-                name: item.name || item.url,
-                extensionId: item.url,
-                extensionURL: item.url,
-                iconURL: extensionIcon,
-                description: item.url,
-                tags: item.tags || ['saved'],
-                featured: true
-            }));
+            const savedItems = saved.map(item => {
+                const tags = ['saved'];
+                if (item.tags) {
+                    item.tags.forEach(t => {
+                        if (t && t !== 'saved') tags.push(t);
+                    });
+                }
+                return {
+                    name: item.name || item.url,
+                    extensionId: item.url,
+                    extensionURL: item.url,
+                    iconURL: item.iconURL || extensionIcon,
+                    description: item.url,
+                    tags: tags,
+                    featured: true
+                };
+            });
             library.push(...savedItems.map(toLibraryItem));
             library.push('---');
         }
         
+        // TurboWarp/gallery extensions
         if (this.state.gallery) {
-            library.push(toLibraryItem(galleryMore));
+            // Don't add "More" link in our modified version, browser has its own
             const locale = this.props.intl.locale;
             library.push(
                 ...this.state.gallery
@@ -251,8 +260,7 @@ class ExtensionLibrary extends React.PureComponent {
                     .map(toLibraryItem)
             );
         } else if (this.state.galleryError) {
-            // Offline - still show saved extensions, but don't fail completely
-            library.push(toLibraryItem(galleryError));
+            // Offline - just skip gallery
         } else {
             library.push(toLibraryItem(galleryLoading));
         }
