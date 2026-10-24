@@ -35,19 +35,11 @@
       .splash-screen > * {
         max-width: 80%;
       }
-      .splash-spinner:after {
-        content: " ";
-        display: block;
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        border: 6px solid;
-        border-color: currentColor transparent currentColor transparent;
-        animation: splash-spinner 1.2s linear infinite;
-      }
-      @keyframes splash-spinner {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      .splash-animation {
+        width: 256px;
+        height: 256px;
+        image-rendering: auto;
+        background: transparent;
       }
       .splash-error-title {
         font-weight: bold;
@@ -86,7 +78,7 @@
     </noscript>
 
     <div class="splash-screen spash-waiting-for-js" hidden>
-      <div class="splash-spinner"></div>
+      <img class="splash-animation" src="<%= htmlWebpackPlugin.options.root %>ulitka.gif" alt="UliBlock loading" />
 
       <div class="splash-error-title" hidden>Something went wrong. <a href="https://scratch.mit.edu/users/GarboMuffin/#comments" target="_blank" rel="noreferrer">Please report</a> with the information below.</div>
       <div class="splash-errors" hidden></div>

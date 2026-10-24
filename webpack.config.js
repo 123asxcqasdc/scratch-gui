@@ -132,6 +132,10 @@ const base = {
                     from: 'src/lib/themes/blocks/high-contrast-media/blocks-media',
                     to: 'static/blocks-media/high-contrast',
                     force: true
+                },
+                {
+                    from: 'src/playground/ulitka.gif',
+                    to: 'ulitka.gif'
                 }
             ]
         })
