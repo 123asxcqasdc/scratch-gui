@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 import styles from './loader.css';
+import snailSvg from './snail.svg';
 import {getIsLoadingWithId} from '../../reducers/project-state';
 
 const mainMessages = {
@@ -78,8 +79,7 @@ class LoaderComponent extends React.Component {
         }
         const clamped = Math.max(0, Math.min(1, progress));
         const trackWidth = this.trackEl.clientWidth || 420;
-        const snailSize = 62;
-        const offset = clamped * (trackWidth - snailSize * 0.7);
+        const offset = clamped * (trackWidth - 70);
         this.snailEl.style.left = `${offset}px`;
     }
     handleAssetProgress (finished, total) {
@@ -92,7 +92,7 @@ class LoaderComponent extends React.Component {
             this.messageEl.textContent = this.props.intl.formatMessage(messages.projectData);
             this.updateSnailPosition(0);
             if (this.snailEl) {
-                this.snailEl.classList.remove(styles.snailExiting);
+                this.snailEl.classList.remove(styles.snailDropping);
                 this.snailEl.classList.add(styles.snailFalling);
             }
         } else {
@@ -153,12 +153,12 @@ class LoaderComponent extends React.Component {
                         className={styles.snailStage}
                         aria-hidden="true"
                     >
-                        <div
+                        <img
+                            src={snailSvg}
                             className={classNames(styles.snail, styles.snailFalling)}
                             ref={this.snailRef}
-                        >
-                            {'\uD83D\uDC0C'}
-                        </div>
+                            alt=""
+                        />
                         <div
                             className={styles.snailTrack}
                             ref={this.trackRef}

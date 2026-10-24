@@ -32,14 +32,14 @@
 .snail-stage {
     position: relative;
     width: 420px;
-    height: 130px;
+    height: 140px;
     margin: 20px auto 12px;
     overflow: visible;
 }
 
 .snail-track {
     position: absolute;
-    bottom: 12px;
+    bottom: 8px;
     left: 0;
     width: 420px;
     height: 6px;
@@ -49,10 +49,10 @@
 
 .snail {
     position: absolute;
-    bottom: 18px;
-    left: -60px;
-    font-size: 62px;
-    line-height: 1;
+    bottom: 10px;
+    left: -80px;
+    width: 70px;
+    height: 70px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
     transform: scaleX(-1);
     transition: left 0.15s linear;
@@ -74,17 +74,17 @@
 @keyframes snail-fall-in {
     0% {
         left: -80px;
-        bottom: 90px;
+        bottom: 100px;
         transform: scaleX(-1) rotate(-25deg);
     }
     70% {
         left: 0;
-        bottom: 18px;
+        bottom: 10px;
         transform: scaleX(-1) rotate(0deg);
     }
     100% {
         left: 0;
-        bottom: 18px;
+        bottom: 10px;
         transform: scaleX(-1) rotate(0deg);
     }
 }
@@ -92,19 +92,19 @@
 @keyframes snail-drop-off {
     0% {
         left: var(--snail-x, 0);
-        bottom: 18px;
+        bottom: 10px;
         transform: scaleX(-1) rotate(0deg);
         opacity: 1;
     }
     40% {
         left: var(--snail-x, 0);
-        bottom: 10px;
+        bottom: 4px;
         transform: scaleX(-1) rotate(8deg);
         opacity: 1;
     }
     100% {
         left: var(--snail-x, 0);
-        bottom: -90px;
+        bottom: -100px;
         transform: scaleX(-1) rotate(35deg);
         opacity: 0;
     }

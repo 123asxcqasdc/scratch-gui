@@ -1,0 +1,28 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <!-- Золотая улитка Лаки -->
+    <g id="lucky-snail">
+        <!-- Рожки с глазами -->
+        <path d="M280,130 L290,80" stroke="#E6BE8A" stroke-width="4" stroke-linecap="round" />
+        <circle cx="290" cy="80" r="6" fill="#DAA520" />
+        <circle cx="290" cy="80" r="2" fill="#000" />
+        
+        <path d="M305,135 L320,85" stroke="#E6BE8A" stroke-width="4" stroke-linecap="round" />
+        <circle cx="320" cy="85" r="6" fill="#DAA520" />
+        <circle cx="320" cy="85" r="2" fill="#000" />
+
+        <!-- Тело улитки -->
+        <path d="M40,220 C40,220 100,220 150,220 C250,220 350,220 360,200 C370,180 350,140 310,140 L100,140 C60,140 40,180 40,220 Z" fill="#F4A460" stroke="#8B4513" stroke-width="2" />
+
+        <!-- Золотая Раковина -->
+        <g id="golden-shell">
+            <circle cx="180" cy="150" r="70" fill="#FFD700" stroke="#B8860B" stroke-width="3" />
+            <path d="M180,150 M180,90 A60,60 0 1,1 130,190 A45,45 0 1,1 210,130 A30,30 0 1,1 170,170 A15,15 0 1,1 185,145" fill="none" stroke="#DAA520" stroke-width="5" stroke-linecap="round" />
+            <ellipse cx="150" cy="120" rx="15" ry="10" fill="white" fill-opacity="0.3" transform="rotate(-30, 150, 120)" />
+        </g>
+        
+        <!-- Улыбка -->
+        <path d="M330,170 Q340,180 350,170" fill="none" stroke="#8B4513" stroke-width="2" stroke-linecap="round" />
+    </g>
+    <!-- Трава -->
+    <path d="M20,220 L380,220" stroke="#228B22" stroke-width="4" stroke-linecap="round" />
+</svg>
