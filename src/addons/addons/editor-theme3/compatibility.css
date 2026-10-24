@@ -13,7 +13,7 @@
 }
 
 .sa-block-color-motion {
-  --sa-block-background-primary: var(--editorTheme3-motion-primary, #4c97ff);
+  --sa-block-background-primary: var(--editorTheme3-motion-primary, #3fb950);
   --sa-block-background-secondary: var(--editorTheme3-motion-secondary, #4280d7);
   --sa-block-background-tertiary: var(--editorTheme3-motion-tertiary, #3373cc);
   --sa-block-field-background: var(--editorTheme3-motion-field, #3373cc);
@@ -21,7 +21,7 @@
 
 .sa-block-color-looks {
   --sa-block-background-primary: var(--editorTheme3-looks-primary, #9966ff);
-  --sa-block-background-secondary: var(--editorTheme3-looks-secondary, #855cd6);
+  --sa-block-background-secondary: var(--editorTheme3-looks-secondary, #3fb950);
   --sa-block-background-tertiary: var(--editorTheme3-looks-tertiary, #774dcb);
   --sa-block-field-background: var(--editorTheme3-looks-field, #774dcb);
 }

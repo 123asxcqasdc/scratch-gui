@@ -1,9 +1,9 @@
 const guiColors = {
     'color-scheme': 'light',
 
-    'ui-primary': 'hsla(215, 100%, 95%, 1)', /* #E5F0FF */
-    'ui-secondary': 'hsla(215, 75%, 95%, 1)', /* #E9F1FC */
-    'ui-tertiary': 'hsla(215, 50%, 90%, 1)', /* #D9E3F2 */
+    'ui-primary': 'hsla(142, 40%, 96%, 1)', /* #f0fdf4 */
+    'ui-secondary': 'hsla(142, 40%, 95%, 1)', /* #f6fff9 */
+    'ui-tertiary': 'hsla(142, 30%, 90%, 1)', /* #dcfce7 */
 
     'ui-modal-overlay': 'var(--motion-primary-transparent)',
     'ui-modal-background': 'hsla(0, 100%, 100%, 1)', /* #FFFFFF */
@@ -21,14 +21,14 @@ const guiColors = {
     'text-primary': 'hsla(225, 15%, 40%, 1)', /* #575E75 */
     'text-primary-transparent': 'hsla(225, 15%, 40%, 0.75)',
 
-    'motion-primary': 'hsla(215, 100%, 65%, 1)', /* #4C97FF */
-    'motion-primary-transparent': 'hsla(215, 100%, 65%, 0.9)', /* 90% transparent version of motion-primary */
-    'motion-tertiary': 'hsla(215, 60%, 50%, 1)', /* #3373CC */
+    'motion-primary': 'hsla(142, 52%, 45%, 1)', /* #3fb950 */
+    'motion-primary-transparent': 'hsla(142, 52%, 45%, 0.9)', /* 90% transparent version of motion-primary */
+    'motion-tertiary': 'hsla(142, 72%, 29%, 1)', /* #238636 */
 
-    'looks-secondary': 'hsla(260, 60%, 60%, 1)', /* #855CD6 */
-    'looks-transparent': 'hsla(260, 60%, 60%, 0.35)', /* 35% transparent version of looks-tertiary */
-    'looks-light-transparent': 'hsla(260, 60%, 60%, 0.15)', /* 15% transparent version of looks-tertiary */
-    'looks-secondary-dark': 'hsla(260, 42%, 51%, 1)', /* #714EB6 */
+    'looks-secondary': 'hsla(142, 52%, 38%, 1)', /* #2ea043 */
+    'looks-transparent': 'hsla(142, 52%, 38%, 0.35)', /* 35% transparent version of looks-tertiary */
+    'looks-light-transparent': 'hsla(142, 52%, 38%, 0.15)', /* 15% transparent version of looks-tertiary */
+    'looks-secondary-dark': 'hsla(142, 72%, 29%, 1)', /* #238636 */
 
     'red-primary': 'hsla(20, 100%, 55%, 1)', /* #FF661A */
     'red-tertiary': 'hsla(20, 100%, 45%, 1)', /* #E64D00 */

@@ -24,7 +24,7 @@
   display: block;
   width: 6px;
   height: 6px;
-  background-color: var(--editorDarkMode-highlightText, #855cd6);
+  background-color: var(--editorDarkMode-highlightText, #3fb950);
   border-radius: 50%;
 }
 

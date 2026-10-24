@@ -78,6 +78,16 @@ const fetchLibrary = async () => {
                 // Add source tags
                 if (best.source === 'official') tags.push('official');
                 else tags.push('community');
+                // Add specific source filters
+                if (best.source && best.source !== 'official' && best.source !== 'turbowarp') {
+                    const src = best.source.toLowerCase().replace(/_/g, '-');
+                    tags.push(`src:${src}`);
+                } else if (best.source_label) {
+                    const label = best.source_label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                    if (label && label !== 'officialnaya-galereya') tags.push(`src:${label}`);
+                } else if (best.source) {
+                    tags.push(`src:${best.source.toLowerCase()}`);
+                }
                 
                 return {
                     name: extension.name,
