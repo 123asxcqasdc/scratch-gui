@@ -77,9 +77,9 @@ class LoaderComponent extends React.Component {
             return;
         }
         const clamped = Math.max(0, Math.min(1, progress));
-        const trackWidth = this.trackEl.clientWidth || 250;
-        const snailSize = 52;
-        const offset = clamped * (trackWidth - snailSize * 0.6);
+        const trackWidth = this.trackEl.clientWidth || 420;
+        const snailSize = 62;
+        const offset = clamped * (trackWidth - snailSize * 0.7);
         this.snailEl.style.left = `${offset}px`;
     }
     handleAssetProgress (finished, total) {
@@ -122,7 +122,7 @@ class LoaderComponent extends React.Component {
             this.snailEl.classList.remove(styles.snailFalling);
             this.snailEl.classList.remove(styles.snailCrawling);
             this.updateSnailPosition(1);
-            const trackWidth = this.trackEl.clientWidth || 250;
+            const trackWidth = this.trackEl.clientWidth || 420;
             this.snailEl.style.setProperty('--snail-x', `${trackWidth * 0.9}px`);
             void this.snailEl.offsetWidth;
             this.snailEl.classList.add(styles.snailExiting);
@@ -173,13 +173,6 @@ class LoaderComponent extends React.Component {
                         className={styles.message}
                         ref={this.messageRef}
                     />
-
-                    <div className={styles.barOuter}>
-                        <div
-                            className={styles.barInner}
-                            ref={this.barInnerRef}
-                        />
-                    </div>
                 </div>
             </div>
         );
