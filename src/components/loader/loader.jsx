@@ -83,24 +83,28 @@ class LoaderComponent extends React.Component {
         this.snailEl.style.left = `${offset}px`;
     }
     handleAssetProgress (finished, total) {
-        if (this.ignoreProgress || !this.barInnerEl || !this.messageEl) {
+        if (this.ignoreProgress || !this.messageEl) {
             return;
         }
 
+        if (this.barInnerEl) {
+            this.barInnerEl.style.width = total === 0 ? '0' : `${finished / total * 100}%`;
+        }
+
         if (total === 0) {
-            this.barInnerEl.style.width = '0';
             this.messageEl.textContent = this.props.intl.formatMessage(messages.projectData);
             this.updateSnailPosition(0);
             if (this.snailEl) {
                 this.snailEl.classList.remove(styles.snailDropping);
+                this.snailEl.classList.remove(styles.snailCrawling);
                 this.snailEl.classList.add(styles.snailFalling);
             }
         } else {
             const progress = finished / total;
-            this.barInnerEl.style.width = `${progress * 100}%`;
             this.updateSnailPosition(progress);
             if (this.snailEl) {
                 this.snailEl.classList.remove(styles.snailFalling);
+                this.snailEl.classList.remove(styles.snailDropping);
                 this.snailEl.classList.add(styles.snailCrawling);
             }
             const message = this.props.isRemote ? messages.downloadingAssets : messages.loadingAssets;
@@ -111,7 +115,7 @@ class LoaderComponent extends React.Component {
         }
     }
     handleProjectLoaded () {
-        if (this.ignoreProgress || !this.barInnerEl || !this.messageEl) {
+        if (this.ignoreProgress || !this.messageEl) {
             return;
         }
 
@@ -127,7 +131,9 @@ class LoaderComponent extends React.Component {
             void this.snailEl.offsetWidth;
             this.snailEl.classList.add(styles.snailDropping);
         }
-        this.props.vm.runtime.resetProgress();
+        if (this.props.vm && this.props.vm.runtime && this.props.vm.runtime.resetProgress) {
+            this.props.vm.runtime.resetProgress();
+        }
     }
     barInnerRef (barInner) {
         this.barInnerEl = barInner;
