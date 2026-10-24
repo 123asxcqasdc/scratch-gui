@@ -61,17 +61,63 @@ class LoaderComponent extends React.Component {
         this.ignoreProgress = false;
         this.finished = false;
     }
+    _attachVM (vm) {
+        if (!vm || !vm.runtime) return;
+        if (this._attachedVM === vm) return;
+        if (this._attachedVM) {
+            try { this._attachedVM.off('ASSET_PROGRESS', this.handleAssetProgress); } catch (e) {}
+            try { this._attachedVM.runtime.off('PROJECT_LOADED', this.handleProjectLoaded); } catch (e) {}
+        }
+        this._attachedVM = vm;
+        try {
+            vm.on('ASSET_PROGRESS', this.handleAssetProgress);
+            vm.runtime.on('PROJECT_LOADED', this.handleProjectLoaded);
+            this.handleAssetProgress(
+                vm.runtime.finishedAssetRequests,
+                vm.runtime.totalAssetRequests
+            );
+        } catch (e) {}
+    }
     componentDidMount () {
-        this.handleAssetProgress(
-            this.props.vm.runtime.finishedAssetRequests,
-            this.props.vm.runtime.totalAssetRequests
-        );
-        this.props.vm.on('ASSET_PROGRESS', this.handleAssetProgress);
-        this.props.vm.runtime.on('PROJECT_LOADED', this.handleProjectLoaded);
+        try {
+            this._attachVM(this.props.vm);
+        } catch (e) {}
+        if (!this._attachedVM && typeof window !== 'undefined') {
+            if (window.vm) this._attachVM(window.vm);
+            else if (window.Scratch && window.Scratch.vm) this._attachVM(window.Scratch.vm);
+        }
+        this._vmCheckInterval = setInterval(() => {
+            if (this._attachedVM) {
+                clearInterval(this._vmCheckInterval);
+                this._vmCheckInterval = null;
+                return;
+            }
+            if (typeof window !== 'undefined') {
+                if (window.vm) this._attachVM(window.vm);
+                else if (window.Scratch && window.Scratch.vm) this._attachVM(window.Scratch.vm);
+            }
+        }, 100);
+        setTimeout(() => {
+            if (this._vmCheckInterval) {
+                clearInterval(this._vmCheckInterval);
+                this._vmCheckInterval = null;
+            }
+        }, 10000);
     }
     componentWillUnmount () {
-        this.props.vm.off('ASSET_PROGRESS', this.handleAssetProgress);
-        this.props.vm.runtime.off('PROJECT_LOADED', this.handleProjectLoaded);
+        if (this._vmCheckInterval) {
+            clearInterval(this._vmCheckInterval);
+            this._vmCheckInterval = null;
+        }
+        if (this._attachedVM) {
+            try { this._attachedVM.off('ASSET_PROGRESS', this.handleAssetProgress); } catch (e) {}
+            try { this._attachedVM.runtime.off('PROJECT_LOADED', this.handleProjectLoaded); } catch (e) {}
+            this._attachedVM = null;
+        }
+        if (this.props.vm) {
+            try { this.props.vm.off('ASSET_PROGRESS', this.handleAssetProgress); } catch (e) {}
+            try { this.props.vm.runtime.off('PROJECT_LOADED', this.handleProjectLoaded); } catch (e) {}
+        }
     }
     updateSnailPosition (progress) {
         if (!this.snailEl || !this.trackEl) {
