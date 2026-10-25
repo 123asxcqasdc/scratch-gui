@@ -175,6 +175,12 @@
           splash.hidden = true;
           window.onerror = null;
         };
+        setTimeout(function () {
+          if (splash && !splash.hidden) {
+            splash.hidden = true;
+            window.onerror = null;
+          }
+        }, 30000);
       })();
     </script>
 
