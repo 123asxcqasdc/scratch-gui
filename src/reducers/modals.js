@@ -4,6 +4,7 @@ const CLOSE_MODAL = 'scratch-gui/modals/CLOSE_MODAL';
 const MODAL_BACKDROP_LIBRARY = 'backdropLibrary';
 const MODAL_COSTUME_LIBRARY = 'costumeLibrary';
 const MODAL_EXTENSION_LIBRARY = 'extensionLibrary';
+const MODAL_EXTENSION_BROWSER = 'extensionBrowser';
 const MODAL_LOADING_PROJECT = 'loadingProject';
 const MODAL_TELEMETRY = 'telemetryModal';
 const MODAL_SOUND_LIBRARY = 'soundLibrary';
