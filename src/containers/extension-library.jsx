@@ -124,7 +124,8 @@ class ExtensionLibrary extends React.PureComponent {
     constructor (props) {
         super(props);
         bindAll(this, [
-            'handleItemSelect'
+            'handleItemSelect',
+            'handleTagClick'
         ]);
         this.state = {
             gallery: cachedGallery,
@@ -157,8 +158,33 @@ class ExtensionLibrary extends React.PureComponent {
                 });
         }
     }
+    handleOpenBrowser () {
+        const browserUrl = new URL('extension-browser.html', window.location.href).toString();
+        const browserWindow = window.open(
+            browserUrl,
+            'uliblock-extension-browser',
+            'width=1200,height=850,minWidth=800,minHeight=600'
+        );
+        if (browserWindow) {
+            browserWindow.focus();
+        }
+    }
+    handleTagClick (tag) {
+        if (tag.toLowerCase() === 'browser') {
+            this.handleOpenBrowser();
+            this.props.onRequestClose();
+            return true;
+        }
+        return false;
+    }
     handleItemSelect (item) {
+        if (item.extensionId === 'gallery_browser') {
+            this.handleOpenBrowser();
+            this.props.onRequestClose();
+            return;
+        }
         if (item.href) {
+            window.open(item.href);
             return;
         }
 
@@ -228,23 +254,15 @@ class ExtensionLibrary extends React.PureComponent {
         // Saved extensions (all user-loaded custom/extensions)
         const saved = getSavedExtensions();
         if (saved.length > 0) {
-            const savedItems = saved.map(item => {
-                const tags = ['saved'];
-                if (item.tags) {
-                    item.tags.forEach(t => {
-                        if (t && t !== 'saved') tags.push(t);
-                    });
-                }
-                return {
-                    name: item.name || item.url,
-                    extensionId: item.url,
-                    extensionURL: item.url,
-                    iconURL: item.iconURL || extensionIcon,
-                    description: item.url,
-                    tags: tags,
-                    featured: true
-                };
-            });
+            const savedItems = saved.map(item => ({
+                name: item.name || item.url,
+                extensionId: item.url,
+                extensionURL: item.url,
+                iconURL: item.iconURL || extensionIcon,
+                description: item.url,
+                tags: ['saved'],
+                featured: true
+            }));
             library.push(...savedItems.map(toLibraryItem));
             library.push('---');
         }
@@ -276,6 +294,7 @@ class ExtensionLibrary extends React.PureComponent {
                 visible={this.props.visible}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
+                onTagClick={this.handleTagClick}
             />
         );
     }

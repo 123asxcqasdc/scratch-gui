@@ -12,6 +12,7 @@ import log from '../lib/log.js';
 import Prompt from './prompt.jsx';
 import BlocksComponent from '../components/blocks/blocks.jsx';
 import ExtensionLibrary from './extension-library.jsx';
+import TWExtensionImportListener from './tw-extension-import-listener.jsx';
 import extensionData from '../lib/libraries/extensions/index.jsx';
 import CustomProcedures from './custom-procedures.jsx';
 import errorBoundaryHOC from '../lib/error-boundary-hoc.jsx';
@@ -712,6 +713,7 @@ class Blocks extends React.Component {
                         onOk={this.handlePromptCallback}
                     />
                 ) : null}
+                <TWExtensionImportListener vm={vm} />
                 {extensionLibraryVisible ? (
                     <ExtensionLibrary
                         vm={vm}

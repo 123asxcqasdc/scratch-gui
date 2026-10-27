@@ -115,6 +115,9 @@ class LibraryComponent extends React.Component {
         this.props.onRequestClose();
     }
     handleTagClick (tag) {
+        if (this.props.onTagClick && this.props.onTagClick(tag)) {
+            return;
+        }
         if (this.state.playingItem === null) {
             this.setState({
                 filterQuery: '',
@@ -392,6 +395,7 @@ LibraryComponent.propTypes = {
     onItemMouseLeave: PropTypes.func,
     onItemSelected: PropTypes.func,
     onRequestClose: PropTypes.func,
+    onTagClick: PropTypes.func,
     setStopHandler: PropTypes.func,
     showPlayButton: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.shape(TagButton.propTypes)),
