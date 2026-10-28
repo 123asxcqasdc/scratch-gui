@@ -9,6 +9,7 @@ import extensionLibraryContent from '../lib/libraries/extensions/index.jsx';
 import extensionTags from '../lib/libraries/tw-extension-tags';
 import {getSavedExtensions, saveExtension} from '../lib/tw-saved-extensions';
 
+import ExtensionBrowserTab from '../components/tw-extension-browser-tab/browser-tab.jsx';
 import LibraryComponent from '../components/library/library.jsx';
 import extensionIcon from '../components/action-menu/icon--sprite.svg';
 
@@ -20,7 +21,8 @@ const messages = defineMessages({
     }
 });
 
-const ULIBLOCK_BROWSER_URL = 'https://123asxcqasdc.github.io/turbowarp-extensions/?uliblock=1';
+const OFFICIAL_GALLERY_URL = 'https://extensions.turbowarp.org/generated-metadata/extensions-v0.json';
+const OFFICIAL_GALLERY_ROOT = 'https://extensions.turbowarp.org/';
 
 const toLibraryItem = extension => {
     if (typeof extension === 'object') {
@@ -32,31 +34,66 @@ const toLibraryItem = extension => {
     return extension;
 };
 
+const translateGalleryItem = (extension, locale) => ({
+    ...extension,
+    name: (extension.nameTranslations && extension.nameTranslations[locale]) || extension.name,
+    description: (extension.descriptionTranslations &&
+        extension.descriptionTranslations[locale]) || extension.description
+});
+
+let cachedOfficialGallery = null;
+
+const fetchOfficialGallery = async () => {
+    const response = await fetch(OFFICIAL_GALLERY_URL);
+    if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+    }
+    const data = await response.json();
+    return data.extensions.map(extension => ({
+        name: extension.name,
+        nameTranslations: extension.nameTranslations || {},
+        description: extension.description,
+        descriptionTranslations: extension.descriptionTranslations || {},
+        extensionId: extension.id,
+        extensionURL: `${OFFICIAL_GALLERY_ROOT}${extension.slug}.js`,
+        iconURL: `${OFFICIAL_GALLERY_ROOT}${extension.image || 'images/unknown.svg'}`,
+        tags: ['tw'],
+        credits: [
+            ...(extension.original || []),
+            ...(extension.by || [])
+        ].map(credit => credit.name),
+        docsURI: extension.docs ? `${OFFICIAL_GALLERY_ROOT}${extension.slug}` : null,
+        incompatibleWithScratch: !extension.scratchCompatible,
+        featured: true
+    }));
+};
+
 class ExtensionLibrary extends React.PureComponent {
     constructor (props) {
         super(props);
+        this.state = {
+            officialGallery: cachedOfficialGallery
+        };
         bindAll(this, [
+            'handleExtensionImported',
             'handleItemSelect',
-            'handleTagClick'
+            'renderTabContent'
         ]);
     }
-    handleOpenBrowser () {
-        const browserWindow = window.open(
-            ULIBLOCK_BROWSER_URL,
-            'uliblock-extension-browser',
-            'width=1200,height=850,minWidth=800,minHeight=600'
-        );
-        if (browserWindow) {
-            browserWindow.focus();
+    componentDidMount () {
+        if (!this.state.officialGallery) {
+            fetchOfficialGallery()
+                .then(officialGallery => {
+                    cachedOfficialGallery = officialGallery;
+                    this.setState({officialGallery});
+                })
+                .catch(error => {
+                    log.error(error);
+                });
         }
     }
-    handleTagClick (tag) {
-        if (tag.toLowerCase() === 'browser') {
-            this.handleOpenBrowser();
-            this.props.onRequestClose();
-            return true;
-        }
-        return false;
+    handleExtensionImported () {
+        this.forceUpdate();
     }
     handleItemSelect (item) {
         if (item.href) {
@@ -121,10 +158,36 @@ class ExtensionLibrary extends React.PureComponent {
             }
         }
     }
+    renderTabContent (selectedTag, filterQuery) {
+        if (selectedTag !== 'browser') {
+            return null;
+        }
+        return (
+            <ExtensionBrowserTab
+                filterQuery={filterQuery}
+                onCategorySelected={this.props.onCategorySelected}
+                onImported={this.handleExtensionImported}
+                vm={this.props.vm}
+            />
+        );
+    }
     render () {
         // Built-in Scratch and TurboWarp extensions, available offline.
         const library = extensionLibraryContent.map(toLibraryItem);
-        library.push('---');
+
+        // Official TurboWarp extensions. In the desktop app these requests are
+        // redirected to the bundled tw-extensions:// protocol, so this works
+        // without an internet connection.
+        if (this.state.officialGallery) {
+            const locale = this.props.intl.locale;
+            library.push('---');
+            library.push(
+                ...this.state.officialGallery
+                    .filter(extension => extension.extensionId !== 'faceSensing')
+                    .map(extension => translateGalleryItem(extension, locale))
+                    .map(toLibraryItem)
+            );
+        }
 
         // Saved extensions (loaded from a URL, file or the extension browser).
         const saved = getSavedExtensions();
@@ -138,14 +201,15 @@ class ExtensionLibrary extends React.PureComponent {
                 tags: ['saved'],
                 featured: true
             }));
-            library.push(...savedItems.map(toLibraryItem));
             library.push('---');
+            library.push(...savedItems.map(toLibraryItem));
         }
 
         return (
             <LibraryComponent
                 data={library}
                 filterable
+                keepTagOnFilter
                 persistableKey="extensionId"
                 id="extensionLibrary"
                 tags={extensionTags}
@@ -153,7 +217,7 @@ class ExtensionLibrary extends React.PureComponent {
                 visible={this.props.visible}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
-                onTagClick={this.handleTagClick}
+                renderTabContent={this.renderTabContent}
             />
         );
     }
