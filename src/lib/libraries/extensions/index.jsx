@@ -460,10 +460,7 @@ export const galleryMore = {
         <FormattedMessage
             defaultMessage="Browser extensions"
             description="Name of extensions browser in extension library"
-            id="tw.extensionGallery.name"
-            values={{
-                APP_NAME
-            }}
+            id="tw.extensionBrowser.name"
         />
     ),
     href: null,
@@ -485,10 +482,7 @@ export const galleryError = {
         <FormattedMessage
             defaultMessage="Browser extensions"
             description="Name of extensions browser in extension library"
-            id="tw.extensionGallery.name"
-            values={{
-                APP_NAME
-            }}
+            id="tw.extensionBrowser.name"
         />
     ),
     href: null,
